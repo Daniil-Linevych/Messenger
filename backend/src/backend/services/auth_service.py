@@ -12,7 +12,7 @@ from ..models.user import User
 from ..core.auth_settings import auth_settings
 from ..schemas.token_schema import Token, TokenData
 from ..schemas.user_schema import UserBase
-from ..exceptions.auth_exceptions import InvalidCredentials, UsernameAlreadyExists
+from ..exceptions.auth_exceptions import InvalidCredentials, UsernameAlreadyExists, UnauthorizedError
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -49,10 +49,10 @@ def verify_access_token(token: str)->TokenData:
         payload = jwt.decode(token, auth_settings.SECRET_KEY, algorithms=[auth_settings.ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
-            raise InvalidCredentials
+            raise UnauthorizedError
         return TokenData(username=username)
     except JWTError:
-        raise InvalidCredentials
+        raise UnauthorizedError
 
 def register_user(user_data:UserBase, db: Session)->User:
     user = get_user_by_username(db, username=user_data.username)
