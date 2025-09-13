@@ -10,11 +10,6 @@ Base = declarative_base()
 
 try:
     engine = create_engine(db_settings.DATABASE_URL)
-    with engine.connect() as conn:
-        result = conn.execute(text("SELECT 1"))
-        print("Database connection successful!")
-        print(f"Result: {result.scalar()}")
-
     SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 except Exception as e:
     print(f"Connection failed: {e}")

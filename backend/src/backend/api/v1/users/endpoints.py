@@ -1,12 +1,20 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from typing import List
+from sqlalchemy.orm import Session
+
+from ....schemas.user_schema import UserResponse
+from ....database.database import get_db
+from ....services.auth_service import get_current_user
+from ....models.user import User
+from ....services import users_service
 
 router = APIRouter()
 
-@router.get('/')
-async def getUsers():
-    return [{"name":"user 1", "id":1}, {"name":"user 1", "id":1}]
+@router.get('/', response_model=List[UserResponse])
+async def get_users(_:User = Depends(get_current_user), db:Session = Depends(get_db)):
+    return users_service.get_users(db)
 
-@router.get('/{userId}')
-async def getUserByid(userId: int):
-    return {"name": f"user {userId}", "id":userId}
+@router.get('/{username}', response_model=List[UserResponse])
+async def getUserByid(username: str, _:User = Depends(get_current_user), db:Session = Depends(get_db)):
+    return users_service.get_user_by_username(username, db)
 

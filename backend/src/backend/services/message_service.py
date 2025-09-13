@@ -15,7 +15,7 @@ def validate_attachments(attachment_ids, user_id:int, db:Session):
     
     return attachments
 
-def send_user_message(message_data:MessageCreate, current_user:User, db:Session):
+def send_message(message_data:MessageCreate, current_user:User, db:Session):
     receiver = db.query(User).filter(User.id == message_data.receiver_id).first()
     if not receiver:
         raise ReceiverNotFound
@@ -68,3 +68,4 @@ def delete_message(message_id:int, current_user:User, db:Session):
     db.delete(message)
     db.commit()
     return {"message": "Message deleted successfully"}
+

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from .file_schema import FileResponse
 from .user_schema import UserResponse
@@ -31,3 +31,7 @@ class MessageResponse(MessageBase):
 
     class Config:
         from_attributes = True
+
+class MessageEventResponse(BaseModel):
+    event: str
+    data: MessageResponse | Dict[str, str]

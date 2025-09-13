@@ -1,20 +1,53 @@
-import { useState } from 'react'
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from './hooks/store_hooks'
+import { useEffect } from 'react'
+import { get_current_user } from './store/slices/auth'
+import LoadingSpinner from './components/common/LoadingSpinner'
+import AuthorisationPage from './pages/AuthorisationPage'
+import HomePage from './pages/HomePage'
+import Header from './components/Header'
+import ChatsPage from './pages/ChatsPage'
+import UsersPage from './pages/UsersPage'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated, loading } = useAppSelector((state) => state.auth);
+
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const token = localStorage.getItem("access_token");
+      
+      if (token && !user && !isAuthenticated) {
+        try {
+          await dispatch(get_current_user()).unwrap();
+        } catch (error) {
+          // Якщо токен недійсний, він вже видалений в authSlice
+          console.error('Failed to get current user:', error);
+        }
+      }
+    };
+
+    initializeAuth();
+  }, []); 
+
+  if (loading && !user && localStorage.getItem("access_token")) {
+    return (
+      <LoadingSpinner/>
+    );
+  }
 
   return (
-    <>
-      <div className='flex justify-center items-center h-screen'>
-        <div className='text-center'>
-        <p className="text-blue-600 font-bold">React app + Typescript + Tailwind</p>
-        <div className='font-bold align-center'>{count}</div>
-        <div>
-            <button className="rounded bg-blue-600 text-white m-4 px-4 py-2" onClick={()=>setCount((count)=>count+1)}>+</button>
-        </div>
-        </div>
-      </div>
-    </>
+    <Router>
+      <Header/>
+      <Routes>
+          <Route path='/' element={<HomePage/>}/>
+          <Route path='/login' element={<AuthorisationPage action='IN'/>}/>
+          <Route path='/register' element={<AuthorisationPage action='UP'/>}/>
+          <Route path='/chats' element={<ChatsPage/>}/>
+          <Route path='/users' element={<UsersPage/>}/>
+      </Routes>
+    </Router>
   )
 }
 

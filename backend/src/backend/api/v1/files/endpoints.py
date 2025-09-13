@@ -14,7 +14,7 @@ router = APIRouter()
 async def upload_files(files: List[UploadFile] = FastAPIFile(...), current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return await files_service.upload_files(files, current_user, db)
 
-@router.get("/{file_id}")
+@router.get("/{file_id}", response_model=FileResponse)
 async def download_file(file_id: int, _: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return files_service.download_file(file_id, db)    
 

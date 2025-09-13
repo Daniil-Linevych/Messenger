@@ -1,9 +1,16 @@
 #!/bin/sh
+set -e
 
-#.venv/bin/alembic stamp head
+echo "Waiting for database..."
+while ! nc -z db 5432; do
+  echo "Database not ready, waiting..."
+  sleep 2
+done
 
-#.venv/bin/alembic revision --autogenerate -m "create users table"
+echo "Database is ready!"
 
+echo "Running migrations..."
 .venv/bin/alembic upgrade head
 
+echo "Starting application..."
 exec "$@"

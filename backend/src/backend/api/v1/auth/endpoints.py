@@ -18,7 +18,7 @@ router = APIRouter()
 async def register(user_data: UserBase, db: Session = Depends(get_db)):
     return register_user(user_data, db)
 
-@router.post("/token", response_model=Token)
+@router.post("/login", response_model=Token)
 async def login(user_data:UserBase, db:Session = Depends(get_db)):
     return login_user(user_data, db)
 
@@ -29,3 +29,4 @@ async def get_active_user(current_user: User = Depends(get_current_user)):
 @router.post("/logout")
 async def logout(current_user:User = Depends(get_current_user), db: Session = Depends(get_db)):
     return logout_user(current_user, db)
+

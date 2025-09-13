@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import timedelta, datetime
-from fastapi import Depends
+from fastapi import Depends, WebSocket, WebSocketDisconnect
 
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
@@ -99,6 +99,26 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db:Session = Dep
     if user is None:
         raise InvalidCredentials()
     return user 
+
+async def get_current_user_ws(websocket: WebSocket, db: Session) -> User:
+    token = websocket.query_params.get("token")
+  
+    if not token:
+        await websocket.close(code=1008)
+        raise WebSocketDisconnect
+
+    try:
+        token_data = verify_access_token(token)
+        user = get_user_by_username(db, token_data.username)
+        if not user:
+            raise ValueError("User not found")
+        return user
+    except Exception as e:
+        print("WS auth failed:", e)
+        await websocket.close(code=1008)
+        raise WebSocketDisconnect
+
+
 
 
     
