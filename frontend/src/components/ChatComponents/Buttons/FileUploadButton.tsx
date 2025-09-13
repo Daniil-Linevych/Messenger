@@ -1,4 +1,3 @@
-// components/Buttons/FileUploadButton.tsx
 import React from 'react';
 
 interface FileUploadButtonProps {

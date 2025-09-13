@@ -22,7 +22,6 @@ function App() {
         try {
           await dispatch(get_current_user()).unwrap();
         } catch (error) {
-          // Якщо токен недійсний, він вже видалений в authSlice
           console.error('Failed to get current user:', error);
         }
       }

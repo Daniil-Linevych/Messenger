@@ -1,4 +1,3 @@
-// src/components/ChatsPage/ConversationList/index.tsx
 import { Link } from 'react-router-dom';
 import type { Conversation } from '../../../types/conversation';
 import ConversationItem from './ConversationItem';
